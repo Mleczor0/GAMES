@@ -467,6 +467,83 @@
             opacity: 0.6;
         }
 
+        /* Loading Screen */
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 40px;
+        }
+
+        .loading-overlay.show {
+            display: flex;
+        }
+
+        .access-text {
+            font-size: 3em;
+            color: #4ade80;
+            font-weight: bold;
+            text-shadow: 0 0 20px rgba(74, 222, 128, 0.8);
+            animation: glow 1s infinite alternate;
+            letter-spacing: 2px;
+        }
+
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 20px rgba(74, 222, 128, 0.8);
+            }
+            to {
+                text-shadow: 0 0 40px rgba(74, 222, 128, 1), 0 0 60px rgba(74, 222, 128, 0.8);
+            }
+        }
+
+        @keyframes grow {
+            from {
+                transform: scale(1);
+            }
+            to {
+                transform: scale(1.2);
+            }
+        }
+
+        .access-text.grow {
+            animation: grow 0.5s ease-out;
+        }
+
+        .loading-bar {
+            width: 300px;
+            height: 30px;
+            background: rgba(26, 31, 58, 0.9);
+            border: 2px solid rgba(74, 222, 128, 0.4);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .loading-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4ade80, #6ee7b7);
+            width: 0%;
+            transition: width 0.1s linear;
+            box-shadow: 0 0 10px rgba(74, 222, 128, 0.8);
+        }
+
+        .loading-text {
+            color: #4ade80;
+            font-size: 1.2em;
+            font-weight: bold;
+            min-width: 60px;
+            text-align: right;
+        }
+
         @media (max-width: 768px) {
             .navbar {
                 padding: 15px 20px;
@@ -504,6 +581,14 @@
                 height: 50px;
                 font-size: 1.5em;
             }
+
+            .access-text {
+                font-size: 2em;
+            }
+
+            .loading-bar {
+                width: 250px;
+            }
         }
     </style>
 </head>
@@ -524,8 +609,17 @@
         </div>
     </div>
 
+    <!-- Loading Screen -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="access-text" id="accessText">UZYSKANO DOSTĘP</div>
+        <div class="loading-bar">
+            <div class="loading-fill" id="loadingFill"></div>
+        </div>
+        <div class="loading-text" id="loadingText">0%</div>
+    </div>
+
     <div class="container">
-        <div class="content-wrapper">
+        <div class="content-wrapper" id="contentWrapper">
             <div class="header">
                 <div class="badge">🔓 HAKOWANIE ROZPOCZĘTO 🔐</div>
                 <h1>Wprowadź Dane</h1>
@@ -551,6 +645,49 @@
     </div>
 
     <script>
+        // Audio context
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playClickSound() {
+            const osc = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            osc.connect(gain);
+            gain.connect(audioContext.destination);
+            osc.frequency.value = 800;
+            osc.type = 'sine';
+            gain.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+            osc.start(audioContext.currentTime);
+            osc.stop(audioContext.currentTime + 0.1);
+        }
+
+        function playLoadingSound() {
+            const osc = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            osc.connect(gain);
+            gain.connect(audioContext.destination);
+            osc.frequency.value = 400;
+            osc.type = 'sine';
+            gain.gain.setValueAtTime(0.2, audioContext.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+            osc.start(audioContext.currentTime);
+            osc.stop(audioContext.currentTime + 0.2);
+        }
+
+        function playSuccessSound() {
+            const osc = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            osc.connect(gain);
+            gain.connect(audioContext.destination);
+            osc.frequency.setValueAtTime(600, audioContext.currentTime);
+            osc.frequency.linearRampToValueAtTime(1000, audioContext.currentTime + 0.15);
+            osc.type = 'sine';
+            gain.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
+            osc.start(audioContext.currentTime);
+            osc.stop(audioContext.currentTime + 0.15);
+        }
+
         // Definicja krzyżówki
         const crosswordData = [
             { number: 1, clue: 'Imię pierwszej ofiary Yami w Los Santos', answer: 'LUIZ', length: 4 },
@@ -571,6 +708,7 @@
         let highlightedIndices = new Set();
 
         function openCreatorModal() {
+            playClickSound();
             const modal = document.getElementById('creatorModal');
             modal.classList.add('show');
             
@@ -611,6 +749,10 @@
                     input.dataset.index = index;
                     input.dataset.position = i;
                     input.dataset.answer = item.answer;
+
+                    input.addEventListener('click', () => {
+                        playClickSound();
+                    });
 
                     input.addEventListener('input', (e) => {
                         const value = e.target.value.toUpperCase();
@@ -686,7 +828,64 @@
             }
         }
 
+        function startLoadingSequence() {
+            playSuccessSound();
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            const accessText = document.getElementById('accessText');
+            const loadingFill = document.getElementById('loadingFill');
+            const loadingText = document.getElementById('loadingText');
+            const contentWrapper = document.getElementById('contentWrapper');
+
+            loadingOverlay.classList.add('show');
+            contentWrapper.style.display = 'none';
+
+            let progress = 0;
+            const totalTime = 35000; // 35 seconds
+            const startTime = Date.now();
+
+            const interval = setInterval(() => {
+                const elapsed = Date.now() - startTime;
+                
+                if (elapsed < 30000) {
+                    // 0-84% over 30 seconds
+                    progress = (elapsed / 30000) * 84;
+                } else if (elapsed < 35000) {
+                    // Stay at 84% for 5 seconds
+                    progress = 84;
+                } else {
+                    // 84-100% instantly
+                    progress = 100;
+                }
+
+                // Play loading sound periodically
+                if (Math.floor(progress) % 10 === 0 && Math.floor(progress) !== Math.floor((elapsed - 100) / totalTime * 100)) {
+                    playLoadingSound();
+                }
+
+                loadingFill.style.width = progress + '%';
+                loadingText.textContent = Math.floor(progress) + '%';
+
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    accessText.classList.add('grow');
+                    playSuccessSound();
+                    
+                    setTimeout(() => {
+                        // Redirect to module 2
+                        loadToModule2();
+                    }, 1000);
+                }
+            }, 50);
+        }
+
+        function loadToModule2() {
+            // Here we can redirect or load the next module
+            // For now, we'll create a simple Snake game
+            window.location.href = 'module2.html';
+        }
+
         function checkAnswers() {
+            playClickSound();
             let correctCount = 0;
             let totalCount = crosswordData.length;
             highlightedIndices.clear();
@@ -719,6 +918,12 @@
                 resultDiv.textContent = '🔓 DOSTĘP PRZYZNANY! Zostałeś zaakceptowany w systemie!';
                 resultDiv.classList.add('success');
                 resultDiv.classList.remove('error');
+                playSuccessSound();
+                
+                // Start loading sequence after 1 second
+                setTimeout(() => {
+                    startLoadingSequence();
+                }, 1000);
             } else {
                 resultDiv.textContent = `🔒 DOSTĘP ODMÓWIONY! ${correctCount}/${totalCount} poprawnych. Spróbuj ponownie.`;
                 resultDiv.classList.add('error');
@@ -741,6 +946,7 @@
         }
 
         function resetCrossword() {
+            playClickSound();
             const inputs = document.querySelectorAll('.cell input');
             inputs.forEach(input => {
                 input.value = '';
