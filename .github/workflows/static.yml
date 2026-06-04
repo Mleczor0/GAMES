@@ -1,43 +1,565 @@
-# Simple workflow for deploying static content to GitHub Pages
-name: Deploy static content to Pages
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Krzyżówka - Zwierzęta</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-on:
-  # Runs on pushes targeting the default branch
-  push:
-    branches: ["main"]
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
 
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
+        .container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 1000px;
+            width: 100%;
+        }
 
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
-permissions:
-  contents: read
-  pages: write
-  id-token: write
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
 
-# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
-# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
 
-jobs:
-  # Single deploy job since we're just deploying
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          # Upload entire repository
-          path: '.'
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v5
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 30px;
+        }
+
+        .crossword-section h2,
+        .clues-section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .crossword-grid {
+            display: inline-block;
+            border: 3px solid #333;
+            background: white;
+        }
+
+        .row {
+            display: flex;
+        }
+
+        .cell {
+            width: 40px;
+            height: 40px;
+            border: 1px solid #999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            position: relative;
+        }
+
+        .cell.black {
+            background: #333;
+            border-color: #333;
+        }
+
+        .cell input {
+            width: 100%;
+            height: 100%;
+            border: none;
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+            text-transform: uppercase;
+            background: white;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .cell input:focus {
+            background: #fff3cd;
+            outline: none;
+        }
+
+        .cell input.correct {
+            color: #28a745;
+            background: #d4edda;
+        }
+
+        .cell input.incorrect {
+            color: #dc3545;
+            background: #f8d7da;
+        }
+
+        .cell-number {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            font-size: 10px;
+            font-weight: bold;
+            color: #333;
+            line-height: 1;
+        }
+
+        .clues-section {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .clues-group {
+            margin-bottom: 25px;
+        }
+
+        .clues-group h3 {
+            color: #764ba2;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .clue {
+            padding: 10px;
+            margin-bottom: 8px;
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            border-radius: 5px;
+        }
+
+        .clue-number {
+            font-weight: bold;
+            color: #667eea;
+            margin-right: 10px;
+        }
+
+        .clue-text {
+            color: #333;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 30px;
+            font-size: 1em;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .btn-check {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-check:hover {
+            background: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+        }
+
+        .btn-reset {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-reset:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3);
+        }
+
+        .btn-hint {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .btn-hint:hover {
+            background: #e0a800;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 193, 7, 0.3);
+        }
+
+        .result-message {
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: bold;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .result-message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+
+        .result-message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+
+        .score {
+            text-align: center;
+            font-size: 1.1em;
+            color: #667eea;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .cell {
+                width: 35px;
+                height: 35px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🐾 Krzyżówka - Zwierzęta 🐾</h1>
+        <p class="subtitle">Rozwiąż krzyżówkę o zwierzętach</p>
+
+        <div class="content">
+            <div class="crossword-section">
+                <h2>Krzyżówka</h2>
+                <div class="crossword-grid" id="crosswordGrid"></div>
+            </div>
+
+            <div class="clues-section">
+                <h2>Hasła</h2>
+                <div class="clues-group">
+                    <h3>⬇️ Pionowo</h3>
+                    <div id="verticalClues"></div>
+                </div>
+                <div class="clues-group">
+                    <h3>➡️ Poziomo</h3>
+                    <div id="horizontalClues"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="button-container">
+            <button class="btn-check" onclick="checkAnswers()">✓ Sprawdź odpowiedzi</button>
+            <button class="btn-hint" onclick="showHint()">💡 Podpowiedź</button>
+            <button class="btn-reset" onclick="resetCrossword()">↻ Wyczyść</button>
+        </div>
+
+        <div class="result-message" id="resultMessage"></div>
+        <div class="score" id="score"></div>
+    </div>
+
+    <script>
+        // Definicja krzyżówki
+        const crosswordData = {
+            grid: [
+                ['L', 'E', 'W', 0, 'K', 'O', 'T', 0, 0],
+                [0, 0, 0, 0, 'O', 0, 'I', 0, 0],
+                ['S', 'O', 'L', 0, 'W', 'O', 'L', 0, 0],
+                ['O', 0, 'A', 0, 0, 0, 0, 0, 0],
+                ['K', 0, 'C', 0, 'O', 'R', 'Ł', 'Y', 'K'],
+                ['O', 0, 'I', 0, 'S', 0, 0, 0, 0],
+                ['Ł', 0, 'A', 0, 'E', 'L', 'E', 'F', 'A', 'N', 'T']
+            ],
+            clues: {
+                horizontal: [
+                    { number: 1, clue: 'Duży drapieżnik z grzywą (5 liter)' },
+                    { number: 4, clue: 'Domowe zwierzę które mruczy (3 litery)' },
+                    { number: 6, clue: 'Małe zwierzę gryzące orzechy (7 liter)' },
+                    { number: 10, clue: 'Zwierzę drapieżne, lądowy drapieżnik (6 liter)' },
+                    { number: 15, clue: 'Największy zwierzę lądowe (6 liter)' }
+                ],
+                vertical: [
+                    { number: 1, clue: 'Duży drapieżnik z grzywą (5 liter)' },
+                    { number: 2, clue: 'Domowe zwierzę które kra kra (3 litery)' },
+                    { number: 3, clue: 'Gryzek z długim ogonem (5 liter)' },
+                    { number: 4, clue: 'Zwierzę które latają (3 litery)' },
+                    { number: 5, clue: 'Czworonóg, przyjaciel człowieka (3 litery)' }
+                ]
+            },
+            answers: {
+                1: { word: 'LEW', direction: 'H', row: 0, col: 0 },
+                4: { word: 'KOT', direction: 'H', row: 0, col: 4 },
+                6: { word: 'WIEWIÓRKA', direction: 'H', row: 2, col: 0 },
+                10: { word: 'ORZEŁ', direction: 'H', row: 4, col: 4 },
+                15: { word: 'SŁOŃ', direction: 'H', row: 6, col: 4 }
+            }
+        };
+
+        let userAnswers = {};
+
+        // Inicjalizacja krzyżówki
+        function initCrossword() {
+            const gridContainer = document.getElementById('crosswordGrid');
+            const grid = crosswordData.grid;
+
+            grid.forEach((row, rowIdx) => {
+                const rowDiv = document.createElement('div');
+                rowDiv.className = 'row';
+
+                row.forEach((cell, colIdx) => {
+                    const cellDiv = document.createElement('div');
+                    cellDiv.className = 'cell' + (cell === 0 ? ' black' : '');
+
+                    if (cell !== 0) {
+                        const input = document.createElement('input');
+                        input.type = 'text';
+                        input.maxLength = '1';
+                        input.dataset.row = rowIdx;
+                        input.dataset.col = colIdx;
+
+                        input.addEventListener('input', (e) => {
+                            const value = e.target.value.toUpperCase();
+                            if (value && !/[A-Z]/.test(value)) {
+                                e.target.value = '';
+                            } else {
+                                e.target.value = value;
+                            }
+                            userAnswers[`${rowIdx}-${colIdx}`] = value;
+                        });
+
+                        input.addEventListener('keydown', (e) => {
+                            if (e.key === 'ArrowRight' || e.key === 'Tab') {
+                                e.preventDefault();
+                                focusNext(rowIdx, colIdx, 'H');
+                            } else if (e.key === 'ArrowDown') {
+                                e.preventDefault();
+                                focusNext(rowIdx, colIdx, 'V');
+                            } else if (e.key === 'ArrowLeft' || e.key === 'Shift+Tab') {
+                                e.preventDefault();
+                                focusPrev(rowIdx, colIdx, 'H');
+                            } else if (e.key === 'ArrowUp') {
+                                e.preventDefault();
+                                focusPrev(rowIdx, colIdx, 'V');
+                            }
+                        });
+
+                        cellDiv.appendChild(input);
+                    }
+
+                    rowDiv.appendChild(cellDiv);
+                });
+
+                gridContainer.appendChild(rowDiv);
+            });
+
+            generateClueNumbers();
+            displayClues();
+        }
+
+        function generateClueNumbers() {
+            const grid = crosswordData.grid;
+            let clueNumber = 1;
+
+            for (let row = 0; row < grid.length; row++) {
+                for (let col = 0; col < grid[row].length; col++) {
+                    if (grid[row][col] !== 0) {
+                        const isStartOfHorizontal = col === 0 || grid[row][col - 1] === 0;
+                        const isStartOfVertical = row === 0 || grid[row - 1][col] === 0;
+
+                        if (isStartOfHorizontal || isStartOfVertical) {
+                            const cell = document.querySelector(`input[data-row="${row}"][data-col="${col}"]`).parentElement;
+                            const numberSpan = document.createElement('div');
+                            numberSpan.className = 'cell-number';
+                            numberSpan.textContent = clueNumber;
+                            cell.appendChild(numberSpan);
+                            clueNumber++;
+                        }
+                    }
+                }
+            }
+        }
+
+        function displayClues() {
+            const horizontalCluesDiv = document.getElementById('horizontalClues');
+            const verticalCluesDiv = document.getElementById('verticalClues');
+
+            crosswordData.clues.horizontal.forEach(clue => {
+                const clueDiv = document.createElement('div');
+                clueDiv.className = 'clue';
+                clueDiv.innerHTML = `<span class="clue-number">${clue.number}.</span><span class="clue-text">${clue.clue}</span>`;
+                horizontalCluesDiv.appendChild(clueDiv);
+            });
+
+            crosswordData.clues.vertical.forEach(clue => {
+                const clueDiv = document.createElement('div');
+                clueDiv.className = 'clue';
+                clueDiv.innerHTML = `<span class="clue-number">${clue.number}.</span><span class="clue-text">${clue.clue}</span>`;
+                verticalCluesDiv.appendChild(clueDiv);
+            });
+        }
+
+        function focusNext(row, col, direction) {
+            const grid = crosswordData.grid;
+            let nextRow = row, nextCol = col;
+
+            if (direction === 'H') {
+                nextCol++;
+            } else {
+                nextRow++;
+            }
+
+            while (nextRow < grid.length && nextCol < grid[0].length) {
+                if (grid[nextRow][nextCol] !== 0) {
+                    const input = document.querySelector(`input[data-row="${nextRow}"][data-col="${nextCol}"]`);
+                    if (input) {
+                        input.focus();
+                        return;
+                    }
+                }
+                if (direction === 'H') {
+                    nextCol++;
+                } else {
+                    nextRow++;
+                }
+            }
+        }
+
+        function focusPrev(row, col, direction) {
+            const grid = crosswordData.grid;
+            let prevRow = row, prevCol = col;
+
+            if (direction === 'H') {
+                prevCol--;
+            } else {
+                prevRow--;
+            }
+
+            while (prevRow >= 0 && prevCol >= 0) {
+                if (prevRow < grid.length && prevCol < grid[prevRow].length && grid[prevRow][prevCol] !== 0) {
+                    const input = document.querySelector(`input[data-row="${prevRow}"][data-col="${prevCol}"]`);
+                    if (input) {
+                        input.focus();
+                        return;
+                    }
+                }
+                if (direction === 'H') {
+                    prevCol--;
+                } else {
+                    prevRow--;
+                }
+            }
+        }
+
+        function checkAnswers() {
+            const grid = crosswordData.grid;
+            let correctCount = 0;
+            let totalCount = 0;
+
+            for (let row = 0; row < grid.length; row++) {
+                for (let col = 0; col < grid[row].length; col++) {
+                    if (grid[row][col] !== 0) {
+                        const input = document.querySelector(`input[data-row="${row}"][data-col="${col}"]`);
+                        const userAnswer = input.value.toUpperCase();
+                        const correctAnswer = grid[row][col];
+
+                        totalCount++;
+
+                        if (userAnswer === correctAnswer) {
+                            input.classList.add('correct');
+                            input.classList.remove('incorrect');
+                            correctCount++;
+                        } else {
+                            input.classList.add('incorrect');
+                            input.classList.remove('correct');
+                        }
+                    }
+                }
+            }
+
+            const resultDiv = document.getElementById('resultMessage');
+            const scoreDiv = document.getElementById('score');
+
+            if (correctCount === totalCount) {
+                resultDiv.textContent = '🎉 Gratulacje! Rozwiązałeś krzyżówkę!';
+                resultDiv.classList.add('success');
+                resultDiv.classList.remove('error');
+            } else {
+                resultDiv.textContent = `⚠️ Spróbuj jeszcze raz! ${correctCount}/${totalCount} poprawnych.`;
+                resultDiv.classList.add('error');
+                resultDiv.classList.remove('success');
+            }
+
+            scoreDiv.textContent = `Wynik: ${correctCount}/${totalCount}`;
+        }
+
+        function resetCrossword() {
+            const inputs = document.querySelectorAll('.cell input');
+            inputs.forEach(input => {
+                input.value = '';
+                input.classList.remove('correct', 'incorrect');
+            });
+            userAnswers = {};
+            document.getElementById('resultMessage').classList.remove('success', 'error');
+            document.getElementById('score').textContent = '';
+        }
+
+        function showHint() {
+            const inputs = document.querySelectorAll('.cell input');
+            const emptyInputs = Array.from(inputs).filter(input => input.value === '');
+
+            if (emptyInputs.length === 0) {
+                alert('Wszystkie pola są wypełnione!');
+                return;
+            }
+
+            const randomInput = emptyInputs[Math.floor(Math.random() * emptyInputs.length)];
+            const row = parseInt(randomInput.dataset.row);
+            const col = parseInt(randomInput.dataset.col);
+            const correctAnswer = crosswordData.grid[row][col];
+
+            randomInput.value = correctAnswer;
+            userAnswers[`${row}-${col}`] = correctAnswer;
+        }
+
+        // Uruchomienie
+        initCrossword();
+    </script>
+</body>
+</html>
