@@ -581,14 +581,6 @@
                 height: 50px;
                 font-size: 1.5em;
             }
-
-            .access-text {
-                font-size: 2em;
-            }
-
-            .loading-bar {
-                width: 250px;
-            }
         }
     </style>
 </head>
@@ -645,20 +637,33 @@
     </div>
 
     <script>
-        // Audio context
+        // Audio context with softer sounds
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
-        function playClickSound() {
+        function playSoftClickSound() {
             const osc = audioContext.createOscillator();
             const gain = audioContext.createGain();
             osc.connect(gain);
             gain.connect(audioContext.destination);
-            osc.frequency.value = 800;
+            osc.frequency.value = 600;
             osc.type = 'sine';
-            gain.gain.setValueAtTime(0.3, audioContext.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+            gain.gain.setValueAtTime(0.15, audioContext.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
             osc.start(audioContext.currentTime);
-            osc.stop(audioContext.currentTime + 0.1);
+            osc.stop(audioContext.currentTime + 0.15);
+        }
+
+        function playTypeSound() {
+            const osc = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            osc.connect(gain);
+            gain.connect(audioContext.destination);
+            osc.frequency.value = 500;
+            osc.type = 'square';
+            gain.gain.setValueAtTime(0.12, audioContext.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.08);
+            osc.start(audioContext.currentTime);
+            osc.stop(audioContext.currentTime + 0.08);
         }
 
         function playLoadingSound() {
@@ -666,12 +671,12 @@
             const gain = audioContext.createGain();
             osc.connect(gain);
             gain.connect(audioContext.destination);
-            osc.frequency.value = 400;
+            osc.frequency.value = 300;
             osc.type = 'sine';
-            gain.gain.setValueAtTime(0.2, audioContext.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+            gain.gain.setValueAtTime(0.1, audioContext.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
             osc.start(audioContext.currentTime);
-            osc.stop(audioContext.currentTime + 0.2);
+            osc.stop(audioContext.currentTime + 0.15);
         }
 
         function playSuccessSound() {
@@ -679,13 +684,13 @@
             const gain = audioContext.createGain();
             osc.connect(gain);
             gain.connect(audioContext.destination);
-            osc.frequency.setValueAtTime(600, audioContext.currentTime);
-            osc.frequency.linearRampToValueAtTime(1000, audioContext.currentTime + 0.15);
+            osc.frequency.setValueAtTime(400, audioContext.currentTime);
+            osc.frequency.linearRampToValueAtTime(600, audioContext.currentTime + 0.12);
             osc.type = 'sine';
-            gain.gain.setValueAtTime(0.3, audioContext.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
+            gain.gain.setValueAtTime(0.15, audioContext.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.12);
             osc.start(audioContext.currentTime);
-            osc.stop(audioContext.currentTime + 0.15);
+            osc.stop(audioContext.currentTime + 0.12);
         }
 
         // Definicja krzyżówki
@@ -708,7 +713,7 @@
         let highlightedIndices = new Set();
 
         function openCreatorModal() {
-            playClickSound();
+            playSoftClickSound();
             const modal = document.getElementById('creatorModal');
             modal.classList.add('show');
             
@@ -751,10 +756,11 @@
                     input.dataset.answer = item.answer;
 
                     input.addEventListener('click', () => {
-                        playClickSound();
+                        playSoftClickSound();
                     });
 
                     input.addEventListener('input', (e) => {
+                        playTypeSound();
                         const value = e.target.value.toUpperCase();
                         // Validation
                         if (value && !/[A-Z0-9]/.test(value)) {
@@ -858,7 +864,7 @@
                 }
 
                 // Play loading sound periodically
-                if (Math.floor(progress) % 10 === 0 && Math.floor(progress) !== Math.floor((elapsed - 100) / totalTime * 100)) {
+                if (Math.floor(progress) % 15 === 0 && Math.floor(progress) !== Math.floor((elapsed - 100) / totalTime * 100)) {
                     playLoadingSound();
                 }
 
@@ -872,20 +878,14 @@
                     
                     setTimeout(() => {
                         // Redirect to module 2
-                        loadToModule2();
+                        window.location.href = 'module2.html';
                     }, 1000);
                 }
             }, 50);
         }
 
-        function loadToModule2() {
-            // Here we can redirect or load the next module
-            // For now, we'll create a simple Snake game
-            window.location.href = 'module2.html';
-        }
-
         function checkAnswers() {
-            playClickSound();
+            playSoftClickSound();
             let correctCount = 0;
             let totalCount = crosswordData.length;
             highlightedIndices.clear();
@@ -946,7 +946,7 @@
         }
 
         function resetCrossword() {
-            playClickSound();
+            playSoftClickSound();
             const inputs = document.querySelectorAll('.cell input');
             inputs.forEach(input => {
                 input.value = '';
