@@ -209,6 +209,22 @@
             letter-spacing: 3px;
         }
 
+        .module-title {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            font-size: 1.4em;
+            color: #4287f5;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 25px;
+        }
+
+        .module-title-emoji {
+            font-size: 1.3em;
+        }
+
         .subtitle {
             font-size: 1.2em;
             color: #a0a0a0;
@@ -228,11 +244,19 @@
         }
 
         .crossword-section h2 {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 12px;
             color: #4287f5;
             margin-bottom: 25px;
             font-size: 1.4em;
             text-transform: uppercase;
             letter-spacing: 2px;
+        }
+
+        .section-emoji {
+            font-size: 1.3em;
         }
 
         .crossword-grid {
@@ -406,6 +430,43 @@
             margin-bottom: 20px;
         }
 
+        .modules-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 40px;
+            padding: 20px;
+            background: rgba(10, 14, 39, 0.9);
+            border: 2px solid rgba(66, 135, 245, 0.3);
+            border-radius: 15px;
+            flex-wrap: wrap;
+        }
+
+        .module-item {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid rgba(66, 135, 245, 0.4);
+            border-radius: 10px;
+            background: rgba(26, 31, 58, 0.8);
+            font-size: 1.8em;
+            transition: all 0.3s ease;
+            cursor: default;
+        }
+
+        .module-item.active {
+            border-color: #4287f5;
+            background: rgba(66, 135, 245, 0.2);
+            box-shadow: 0 0 20px rgba(66, 135, 245, 0.4);
+            transform: scale(1.1);
+        }
+
+        .module-item.inactive {
+            opacity: 0.6;
+        }
+
         @media (max-width: 768px) {
             .navbar {
                 padding: 15px 20px;
@@ -432,6 +493,16 @@
             button {
                 padding: 10px 20px;
                 font-size: 0.9em;
+            }
+
+            .modules-container {
+                gap: 10px;
+            }
+
+            .module-item {
+                width: 50px;
+                height: 50px;
+                font-size: 1.5em;
             }
         }
     </style>
@@ -463,7 +534,7 @@
             </div>
 
             <div class="crossword-section">
-                <h2>⬛ Moduł I</h2>
+                <h2><span class="section-emoji">📄</span>Moduł I</h2>
                 <div class="crossword-grid" id="crosswordGrid"></div>
             </div>
 
@@ -474,6 +545,8 @@
 
             <div class="result-message" id="resultMessage"></div>
             <div class="score" id="score"></div>
+
+            <div class="modules-container" id="modulesContainer"></div>
         </div>
     </div>
 
@@ -493,6 +566,7 @@
             { number: 11, clue: 'Jak miał na imię strażnik na wieży na operacji na lotnisku Sandy Shores', answer: 'GEORGE', length: 6 }
         ];
 
+        const moduleEmojis = ['📄', '🔑', '💾', '⚙️', '🎯', '🔐', '📡', '🎲', '💎', '🌌'];
         let userAnswers = {};
         let highlightedIndices = new Set();
 
@@ -592,6 +666,26 @@
             });
         }
 
+        // Inicjalizacja modułów
+        function initModules() {
+            const modulesContainer = document.getElementById('modulesContainer');
+            modulesContainer.innerHTML = '';
+
+            for (let i = 0; i < 5; i++) {
+                const moduleItem = document.createElement('div');
+                moduleItem.className = 'module-item';
+                if (i === 0) {
+                    moduleItem.classList.add('active');
+                } else {
+                    moduleItem.classList.add('inactive');
+                }
+                
+                const emoji = moduleEmojis[Math.floor(Math.random() * moduleEmojis.length)];
+                moduleItem.textContent = emoji;
+                modulesContainer.appendChild(moduleItem);
+            }
+        }
+
         function checkAnswers() {
             let correctCount = 0;
             let totalCount = crosswordData.length;
@@ -661,6 +755,7 @@
 
         // Uruchomienie
         initCrossword();
+        initModules();
     </script>
 </body>
 </html>
