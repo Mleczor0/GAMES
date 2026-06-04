@@ -155,6 +155,24 @@
             font-weight: bold;
         }
 
+        .progress-bar {
+            width: 100%;
+            height: 25px;
+            background: rgba(10, 14, 39, 0.9);
+            border: 2px solid rgba(74, 222, 128, 0.3);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4ade80, #6ee7b7);
+            width: 0%;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 10px rgba(74, 222, 128, 0.8);
+        }
+
         #gameCanvas {
             border: 3px solid rgba(74, 222, 128, 0.5);
             background: rgba(10, 14, 39, 0.95);
@@ -287,6 +305,83 @@
             transform: scale(1.1);
         }
 
+        /* Loading Screen */
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 40px;
+        }
+
+        .loading-overlay.show {
+            display: flex;
+        }
+
+        .access-text {
+            font-size: 3em;
+            color: #4ade80;
+            font-weight: bold;
+            text-shadow: 0 0 20px rgba(74, 222, 128, 0.8);
+            animation: glow 1s infinite alternate;
+            letter-spacing: 2px;
+        }
+
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 20px rgba(74, 222, 128, 0.8);
+            }
+            to {
+                text-shadow: 0 0 40px rgba(74, 222, 128, 1), 0 0 60px rgba(74, 222, 128, 0.8);
+            }
+        }
+
+        @keyframes grow {
+            from {
+                transform: scale(1);
+            }
+            to {
+                transform: scale(1.2);
+            }
+        }
+
+        .access-text.grow {
+            animation: grow 0.5s ease-out;
+        }
+
+        .loading-bar {
+            width: 300px;
+            height: 30px;
+            background: rgba(26, 31, 58, 0.9);
+            border: 2px solid rgba(74, 222, 128, 0.4);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .loading-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4ade80, #6ee7b7);
+            width: 0%;
+            transition: width 0.1s linear;
+            box-shadow: 0 0 10px rgba(74, 222, 128, 0.8);
+        }
+
+        .loading-text {
+            color: #4ade80;
+            font-size: 1.2em;
+            font-weight: bold;
+            min-width: 60px;
+            text-align: right;
+        }
+
         @media (max-width: 768px) {
             h1 {
                 font-size: 1.8em;
@@ -318,7 +413,7 @@
 
     <div class="container">
         <div class="content-wrapper">
-            <h1><span style="font-size: 1.2em;">🔑</span>Moduł II</h1>
+            <h1><span style="font-size: 1.2em;">🐍</span>Moduł II</h1>
             <p class="subtitle">Zbierz kulki, unikaj ślepych zaułków</p>
 
             <div class="game-info">
@@ -327,13 +422,17 @@
                     <div class="info-value" id="score">0</div>
                 </div>
                 <div class="info-box">
-                    <div class="info-label">Długość</div>
-                    <div class="info-value" id="length">3</div>
+                    <div class="info-label">Cel</div>
+                    <div class="info-value" id="goal">200</div>
                 </div>
                 <div class="info-box">
                     <div class="info-label">Highest</div>
                     <div class="info-value" id="highScore">0</div>
                 </div>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
             </div>
 
             <canvas id="gameCanvas" width="400" height="400"></canvas>
@@ -348,25 +447,34 @@
     </div>
 
     <div class="game-over" id="gameOver">
-        <h2>GAME OVER</h2>
+        <h2 id="gameOverTitle">GAME OVER</h2>
         <p id="gameOverText">Wynik: 0</p>
     </div>
 
+    <!-- Loading Screen -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="access-text" id="accessText">UZYSKANO DOSTĘP</div>
+        <div class="loading-bar">
+            <div class="loading-fill" id="loadingFill"></div>
+        </div>
+        <div class="loading-text" id="loadingText">0%</div>
+    </div>
+
     <script>
-        // Audio context
+        // Audio context with soft sounds
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
-        function playClickSound() {
+        function playSoftClickSound() {
             const osc = audioContext.createOscillator();
             const gain = audioContext.createGain();
             osc.connect(gain);
             gain.connect(audioContext.destination);
-            osc.frequency.value = 800;
+            osc.frequency.value = 600;
             osc.type = 'sine';
-            gain.gain.setValueAtTime(0.3, audioContext.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+            gain.gain.setValueAtTime(0.15, audioContext.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
             osc.start(audioContext.currentTime);
-            osc.stop(audioContext.currentTime + 0.1);
+            osc.stop(audioContext.currentTime + 0.15);
         }
 
         function playEatSound() {
@@ -374,13 +482,13 @@
             const gain = audioContext.createGain();
             osc.connect(gain);
             gain.connect(audioContext.destination);
-            osc.frequency.setValueAtTime(600, audioContext.currentTime);
-            osc.frequency.linearRampToValueAtTime(1000, audioContext.currentTime + 0.1);
+            osc.frequency.setValueAtTime(400, audioContext.currentTime);
+            osc.frequency.linearRampToValueAtTime(700, audioContext.currentTime + 0.12);
             osc.type = 'sine';
-            gain.gain.setValueAtTime(0.3, audioContext.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+            gain.gain.setValueAtTime(0.12, audioContext.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.12);
             osc.start(audioContext.currentTime);
-            osc.stop(audioContext.currentTime + 0.1);
+            osc.stop(audioContext.currentTime + 0.12);
         }
 
         function playGameOverSound() {
@@ -388,13 +496,40 @@
             const gain = audioContext.createGain();
             osc.connect(gain);
             gain.connect(audioContext.destination);
-            osc.frequency.setValueAtTime(800, audioContext.currentTime);
+            osc.frequency.setValueAtTime(600, audioContext.currentTime);
             osc.frequency.linearRampToValueAtTime(200, audioContext.currentTime + 0.3);
             osc.type = 'sine';
-            gain.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gain.gain.setValueAtTime(0.2, audioContext.currentTime);
             gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
             osc.start(audioContext.currentTime);
             osc.stop(audioContext.currentTime + 0.3);
+        }
+
+        function playSuccessSound() {
+            const osc = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            osc.connect(gain);
+            gain.connect(audioContext.destination);
+            osc.frequency.setValueAtTime(400, audioContext.currentTime);
+            osc.frequency.linearRampToValueAtTime(600, audioContext.currentTime + 0.12);
+            osc.type = 'sine';
+            gain.gain.setValueAtTime(0.15, audioContext.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.12);
+            osc.start(audioContext.currentTime);
+            osc.stop(audioContext.currentTime + 0.12);
+        }
+
+        function playLoadingSound() {
+            const osc = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            osc.connect(gain);
+            gain.connect(audioContext.destination);
+            osc.frequency.value = 300;
+            osc.type = 'sine';
+            gain.gain.setValueAtTime(0.1, audioContext.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
+            osc.start(audioContext.currentTime);
+            osc.stop(audioContext.currentTime + 0.15);
         }
 
         // Game variables
@@ -402,6 +537,7 @@
         const ctx = canvas.getContext('2d');
         const gridSize = 20;
         const tileCount = canvas.width / gridSize;
+        const GOAL = 200;
 
         let snake = [{x: 10, y: 10}];
         let food = {x: Math.floor(Math.random() * tileCount), y: Math.floor(Math.random() * tileCount)};
@@ -410,7 +546,7 @@
         let nextDx = 1;
         let nextDy = 0;
         let gameRunning = false;
-        let gameSpeed = 100;
+        let gameSpeed = 150;
         let lastUpdateTime = 0;
         let score = 0;
         let highScore = localStorage.getItem('snakeHighScore') || 0;
@@ -419,7 +555,7 @@
 
         // Keyboard controls
         document.addEventListener('keydown', (e) => {
-            playClickSound();
+            playSoftClickSound();
             switch(e.key) {
                 case 'ArrowUp':
                     if (dy === 0) { nextDx = 0; nextDy = -1; }
@@ -439,7 +575,7 @@
         canvas.addEventListener('click', startGame);
 
         function startGame() {
-            playClickSound();
+            playSoftClickSound();
             if (!gameRunning) {
                 gameRunning = true;
                 gameLoop();
@@ -447,7 +583,7 @@
         }
 
         function resetGame() {
-            playClickSound();
+            playSoftClickSound();
             snake = [{x: 10, y: 10}];
             food = {x: Math.floor(Math.random() * tileCount), y: Math.floor(Math.random() * tileCount)};
             dx = 1;
@@ -457,7 +593,7 @@
             gameRunning = false;
             score = 0;
             document.getElementById('score').textContent = score;
-            document.getElementById('length').textContent = snake.length;
+            document.getElementById('progressFill').style.width = '0%';
             document.getElementById('gameOver').classList.remove('show');
             draw();
         }
@@ -502,9 +638,14 @@
                 playEatSound();
                 score += 10;
                 document.getElementById('score').textContent = score;
-                document.getElementById('length').textContent = snake.length;
+                const progress = (score / GOAL) * 100;
+                document.getElementById('progressFill').style.width = Math.min(progress, 100) + '%';
                 food = {x: Math.floor(Math.random() * tileCount), y: Math.floor(Math.random() * tileCount)};
-                gameSpeed = Math.max(50, gameSpeed - 2);
+                gameSpeed = Math.max(100, gameSpeed - 1);
+
+                if (score >= GOAL) {
+                    endGameSuccess();
+                }
             } else {
                 snake.pop();
             }
@@ -515,7 +656,6 @@
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             // Draw snake
-            ctx.fillStyle = '#4ade80';
             for (let i = 0; i < snake.length; i++) {
                 const segment = snake[i];
                 if (i === 0) {
@@ -558,14 +698,79 @@
                 document.getElementById('highScore').textContent = highScore;
             }
 
+            document.getElementById('gameOverTitle').textContent = 'GAME OVER';
             document.getElementById('gameOverText').textContent = `Wynik: ${score}`;
             document.getElementById('gameOver').classList.add('show');
+        }
+
+        function endGameSuccess() {
+            gameRunning = false;
+            playSuccessSound();
+
+            if (score > highScore) {
+                highScore = score;
+                localStorage.setItem('snakeHighScore', highScore);
+                document.getElementById('highScore').textContent = highScore;
+            }
+
+            document.getElementById('gameOverTitle').textContent = '✓ CEL OSIĄGNIĘTY!';
+            document.getElementById('gameOverText').textContent = `Wynik: ${score} / ${GOAL}`;
+            document.getElementById('gameOver').classList.add('show');
+
+            setTimeout(() => {
+                startLoadingSequence();
+            }, 2000);
+        }
+
+        function startLoadingSequence() {
+            playSuccessSound();
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            const accessText = document.getElementById('accessText');
+            const loadingFill = document.getElementById('loadingFill');
+            const loadingText = document.getElementById('loadingText');
+            const contentWrapper = document.querySelector('.container');
+
+            loadingOverlay.classList.add('show');
+            contentWrapper.style.display = 'none';
+
+            let progress = 0;
+            const totalTime = 35000;
+            const startTime = Date.now();
+
+            const interval = setInterval(() => {
+                const elapsed = Date.now() - startTime;
+                
+                if (elapsed < 30000) {
+                    progress = (elapsed / 30000) * 84;
+                } else if (elapsed < 35000) {
+                    progress = 84;
+                } else {
+                    progress = 100;
+                }
+
+                if (Math.floor(progress) % 15 === 0 && Math.floor(progress) !== Math.floor((elapsed - 100) / totalTime * 100)) {
+                    playLoadingSound();
+                }
+
+                loadingFill.style.width = progress + '%';
+                loadingText.textContent = Math.floor(progress) + '%';
+
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    accessText.classList.add('grow');
+                    playSuccessSound();
+                    
+                    setTimeout(() => {
+                        window.location.href = 'module3.html';
+                    }, 1000);
+                }
+            }, 50);
         }
 
         // Initialize modules
         function initModules() {
             const modulesContainer = document.getElementById('modulesContainer');
-            const moduleEmojis = ['📄', '🔑', '💾', '⚙️', '🎯', '🔐', '📡', '🎲', '💎', '🌌'];
+            const moduleEmojis = ['📄', '🐍', '🟩', '⚙️', '🎯'];
 
             for (let i = 0; i < 5; i++) {
                 const moduleItem = document.createElement('div');
@@ -576,7 +781,7 @@
                     moduleItem.classList.add('inactive');
                 }
                 
-                const emoji = moduleEmojis[Math.floor(Math.random() * moduleEmojis.length)];
+                const emoji = moduleEmojis[i];
                 moduleItem.textContent = emoji;
                 modulesContainer.appendChild(moduleItem);
             }
