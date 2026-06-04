@@ -265,9 +265,10 @@
 
         .clue-text {
             color: #c0c0c0;
-            font-size: 0.95em;
+            font-size: 0.9em;
             min-width: 200px;
             flex: 1;
+            line-height: 1.4;
         }
 
         .input-row {
@@ -308,14 +309,26 @@
 
         .cell input.correct {
             color: #4ade80;
-            background: rgba(74, 222, 128, 0.1);
+            background: rgba(74, 222, 128, 0.2);
             border-color: #4ade80;
+        }
+
+        .cell input.correct.remove-highlight {
+            background: rgba(26, 31, 58, 0.9);
+            border-color: rgba(66, 135, 245, 0.4);
+            color: #fff;
         }
 
         .cell input.incorrect {
             color: #ff6b6b;
-            background: rgba(255, 107, 107, 0.1);
+            background: rgba(255, 107, 107, 0.2);
             border-color: #ff6b6b;
+        }
+
+        .cell input.incorrect.remove-highlight {
+            background: rgba(26, 31, 58, 0.9);
+            border-color: rgba(66, 135, 245, 0.4);
+            color: #fff;
         }
 
         .button-container {
@@ -358,17 +371,6 @@
         .btn-reset:hover {
             background: rgba(255, 107, 107, 0.15);
             box-shadow: 0 0 20px rgba(255, 107, 107, 0.3);
-            transform: translateY(-2px);
-        }
-
-        .btn-hint {
-            border-color: #fbbf24;
-            color: #fbbf24;
-        }
-
-        .btn-hint:hover {
-            background: rgba(251, 191, 36, 0.15);
-            box-shadow: 0 0 20px rgba(251, 191, 36, 0.3);
             transform: translateY(-2px);
         }
 
@@ -461,13 +463,12 @@
             </div>
 
             <div class="crossword-section">
-                <h2>⬛ Krzyżówka</h2>
+                <h2>⬛ Moduł I</h2>
                 <div class="crossword-grid" id="crosswordGrid"></div>
             </div>
 
             <div class="button-container">
                 <button class="btn-check" onclick="checkAnswers()">✓ Zweryfikuj Dostęp</button>
-                <button class="btn-hint" onclick="showHint()">💡 Podpowiedź</button>
                 <button class="btn-reset" onclick="resetCrossword()">↻ Wyczyść</button>
             </div>
 
@@ -488,10 +489,12 @@
             { number: 7, clue: 'Jedna z trzech lokalizacji mapy Victora Vectora', answer: 'RZEZNIA', length: 7 },
             { number: 8, clue: 'Czego nie miał Gregory kiedy Yami chciała rozpocząć zabawę?', answer: 'ZASIEGU', length: 7 },
             { number: 9, clue: 'Nazwisko twórcy', answer: 'KURO', length: 4 },
-            { number: 10, clue: 'Nazwisko wokalisty którego utwór można usłyszeć w grze 6 ★', answer: 'FEASTER', length: 7 }
+            { number: 10, clue: 'Nazwisko wokalisty którego utwór można usłyszeć w grze 6 ★', answer: 'FEASTER', length: 7 },
+            { number: 11, clue: 'Jak miał na imię strażnik na wieży na operacji na lotnisku Sandy Shores', answer: 'GEORGE', length: 6 }
         ];
 
         let userAnswers = {};
+        let highlightedIndices = new Set();
 
         function openCreatorModal() {
             const modal = document.getElementById('creatorModal');
@@ -592,6 +595,7 @@
         function checkAnswers() {
             let correctCount = 0;
             let totalCount = crosswordData.length;
+            highlightedIndices.clear();
 
             crosswordData.forEach((item, index) => {
                 const userAnswer = (userAnswers[index] || []).join('').toUpperCase();
@@ -610,6 +614,7 @@
                         inp.classList.add('incorrect');
                         inp.classList.remove('correct');
                     });
+                    highlightedIndices.add(index);
                 }
             });
 
@@ -627,49 +632,31 @@
             }
 
             scoreDiv.textContent = `Status: ${correctCount}/${totalCount}`;
+
+            // Usuń podświetlenie czerwonych po 5 sekundach
+            setTimeout(() => {
+                highlightedIndices.forEach(idx => {
+                    const inputRow = document.getElementById(`row-${idx}`);
+                    const inputs = inputRow.querySelectorAll('input');
+                    inputs.forEach(inp => {
+                        inp.classList.add('remove-highlight');
+                        inp.classList.remove('incorrect');
+                    });
+                });
+            }, 5000);
         }
 
         function resetCrossword() {
             const inputs = document.querySelectorAll('.cell input');
             inputs.forEach(input => {
                 input.value = '';
-                input.classList.remove('correct', 'incorrect');
+                input.classList.remove('correct', 'incorrect', 'remove-highlight');
             });
             userAnswers = {};
+            highlightedIndices.clear();
             document.getElementById('resultMessage').classList.remove('success', 'error');
             document.getElementById('resultMessage').textContent = '';
             document.getElementById('score').textContent = '';
-        }
-
-        function showHint() {
-            const emptyAnswers = [];
-            
-            crosswordData.forEach((item, index) => {
-                const userAnswer = (userAnswers[index] || []).join('').toUpperCase();
-                if (userAnswer !== item.answer) {
-                    emptyAnswers.push(index);
-                }
-            });
-
-            if (emptyAnswers.length === 0) {
-                alert('Wszystkie hasła są poprawne!');
-                return;
-            }
-
-            const randomIndex = emptyAnswers[Math.floor(Math.random() * emptyAnswers.length)];
-            const item = crosswordData[randomIndex];
-            const inputRow = document.getElementById(`row-${randomIndex}`);
-            const inputs = inputRow.querySelectorAll('input');
-
-            // Wypełnij losowe hasło
-            if (!userAnswers[randomIndex]) {
-                userAnswers[randomIndex] = [];
-            }
-
-            item.answer.split('').forEach((letter, pos) => {
-                inputs[pos].value = letter;
-                userAnswers[randomIndex][pos] = letter;
-            });
         }
 
         // Uruchomienie
