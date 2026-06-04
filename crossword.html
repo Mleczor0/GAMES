@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Krzyżówka - Zwierzęta</title>
+    <title>Hakowanie Rozpoczęto</title>
     <style>
         * {
             margin: 0;
@@ -63,14 +63,8 @@
         }
 
         .logo {
-            font-size: 1.8em;
-            font-weight: bold;
-            color: #fff;
-            letter-spacing: 2px;
-        }
-
-        .logo span {
-            color: #4287f5;
+            font-size: 1.2em;
+            cursor: pointer;
         }
 
         .nav-links {
@@ -91,10 +85,83 @@
             color: #4287f5;
         }
 
-        .nav-links a.active {
+        .laptop-icon {
+            font-size: 1.5em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .laptop-icon:hover {
             color: #4287f5;
-            border-bottom: 2px solid #4287f5;
-            padding-bottom: 5px;
+            transform: scale(1.1);
+        }
+
+        /* Modal dla twórcy */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            animation: slideDown 0.5s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .discord-logo {
+            font-size: 5em;
+            animation: discordPulse 1s ease;
+        }
+
+        @keyframes discordPulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.1); }
+        }
+
+        .creator-name {
+            font-family: 'Comic Sans MS', cursive;
+            font-size: 3em;
+            color: #4287f5;
+            text-shadow: 0 0 20px rgba(66, 135, 245, 0.8);
+            animation: fadeOut 5s ease forwards;
+            margin-top: 20px;
+        }
+
+        @keyframes fadeOut {
+            0% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { opacity: 0; }
         }
 
         .container {
@@ -152,6 +219,8 @@
             color: #707090;
             font-size: 0.95em;
             line-height: 1.6;
+            max-width: 600px;
+            margin: 0 auto;
         }
 
         .content {
@@ -395,7 +464,7 @@
             }
 
             .logo {
-                font-size: 1.3em;
+                font-size: 1.1em;
             }
 
             .nav-links {
@@ -435,26 +504,33 @@
 </head>
 <body>
     <nav class="navbar">
-        <div class="logo">XR<span>Games</span></div>
+        <div class="logo">⚠️ HAKOWANIE</div>
         <div class="nav-links">
-            <a class="active">Strona Główna</a>
-            <a href="#crossword">Krzyżówka</a>
-            <a href="#about">O Nas</a>
+            <a onclick="openCreatorModal()">Twórca</a>
+            <span class="laptop-icon">💻</span>
         </div>
     </nav>
+
+    <!-- Modal dla twórcy -->
+    <div class="modal" id="creatorModal">
+        <div class="modal-content">
+            <div class="discord-logo">🎮</div>
+            <div class="creator-name">Mleczor0</div>
+        </div>
+    </div>
 
     <div class="container">
         <div class="content-wrapper">
             <div class="header">
-                <div class="badge">🐾 KRZYŻÓWKA O ZWIERZĘTACH 🐾</div>
-                <h1>Krzyżówka Zwierząt</h1>
-                <p class="subtitle">Rozwiąż krzyżówkę i zgadnij nazwiska zwierząt</p>
-                <p class="description">Sprawdź swoją wiedzę na temat zwierząt. Uzupełnij wszystkie pola i kliknij "Sprawdź odpowiedzi" aby zobaczyć wynik.</p>
+                <div class="badge">🔓 HAKOWANIE ROZPOCZĘTO 🔐</div>
+                <h1>Wprowadź Dane</h1>
+                <p class="subtitle">Dostęp do systemu wymaga znajomości tajnych informacji</p>
+                <p class="description">W ciszy nocy, gdy większość śpi, hackerzy przywołują fragmenty przeszłości. Każda litera to klucz do zamkniętych drzwi. Czy jesteś wystarczająco zdeterminowany, aby odkryć prawdę ukrytą w kodzie?</p>
             </div>
 
             <div class="content">
                 <div class="crossword-section">
-                    <h2>⬜ Krzyżówka</h2>
+                    <h2>⬛ Krzyżówka</h2>
                     <div class="crossword-grid" id="crosswordGrid"></div>
                 </div>
 
@@ -472,7 +548,7 @@
             </div>
 
             <div class="button-container">
-                <button class="btn-check" onclick="checkAnswers()">✓ Sprawdź Odpowiedzi</button>
+                <button class="btn-check" onclick="checkAnswers()">✓ Zweryfikuj Dostęp</button>
                 <button class="btn-hint" onclick="showHint()">💡 Podpowiedź</button>
                 <button class="btn-reset" onclick="resetCrossword()">↻ Wyczyść</button>
             </div>
@@ -483,43 +559,49 @@
     </div>
 
     <script>
-        // Definicja krzyżówki
+        // Definicja krzyżówki - połączone hasła
         const crosswordData = {
             grid: [
-                ['L', 'E', 'W', 0, 'K', 'O', 'T', 0, 0],
-                [0, 0, 0, 0, 'O', 0, 'I', 0, 0],
-                ['S', 'O', 'L', 0, 'W', 'O', 'L', 0, 0],
-                ['O', 0, 'A', 0, 0, 0, 0, 0, 0],
-                ['K', 0, 'C', 0, 'O', 'R', 'Ł', 'Y', 'K'],
-                ['O', 0, 'I', 0, 'S', 0, 0, 0, 0],
-                ['Ł', 0, 'A', 0, 'E', 'L', 'E', 'F', 'A', 'N', 'T']
+                ['L', 'U', 'I', 'Z', 0, 'R', 'O', 'G', 'E', 'R', 'S'],
+                [0, 0, 'B', 0, 0, 0, 0, 0, 0, 0, 0],
+                ['B', 'A', 'L', 'L', 'E', 'R', 0, 'K', 'U', 'R', 'O'],
+                ['4', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                ['K', 'R', 'U', 'S', 'Z', 'Y', 'N', 'K', 'A', 0, 0],
+                ['Y', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                ['A', 'R', 'O', 'I', 0, 'R', 'Z', 'E', 'Z', 'N', 'I', 'A'],
+                ['0', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                ['Z', 'A', 'S', 'I', 'E', 'G', 'U', 0, 0, 0, 0, 0],
+                ['F', 'E', 'A', 'S', 'T', 'E', 'R', 0, 0, 0, 0, 0]
             ],
             clues: {
                 horizontal: [
-                    { number: 1, clue: 'Duży drapieżnik z grzywą (5 liter)' },
-                    { number: 4, clue: 'Domowe zwierzę które mruczy (3 litery)' },
-                    { number: 6, clue: 'Małe zwierzę gryzące orzechy (7 liter)' },
-                    { number: 10, clue: 'Zwierzę drapieżne, lądowy drapieżnik (6 liter)' },
-                    { number: 15, clue: 'Największy zwierzę lądowe (6 liter)' }
+                    { number: 1, clue: 'Imię pierwszej ofiary Yami w Los Santos' },
+                    { number: 3, clue: 'Pojazd który porwał partnerkę Leona' },
+                    { number: 6, clue: 'Imię psa Pana B' },
+                    { number: 7, clue: 'Handlował tym inspektor' },
+                    { number: 9, clue: 'Czego nie miał Gregory kiedy Yami chciała rozpocząć zabawę?' },
+                    { number: 10, clue: 'Nazwisko wokalisty którego utwór można usłyszeć w grze 6 ★' }
                 ],
                 vertical: [
-                    { number: 1, clue: 'Duży drapieżnik z grzywą (5 liter)' },
-                    { number: 2, clue: 'Domowe zwierzę które kra kra (3 litery)' },
-                    { number: 3, clue: 'Gryzek z długim ogonem (5 liter)' },
-                    { number: 4, clue: 'Zwierzę które latają (3 litery)' },
-                    { number: 5, clue: 'Czworonóg, przyjaciel człowieka (3 litery)' }
+                    { number: 1, clue: 'Imię pierwszej ofiary Yami w Los Santos' },
+                    { number: 2, clue: 'Nazwisko kobiety która pracowała na stacji benzynowej' },
+                    { number: 4, clue: 'Ilość japońców którzy pilnowali furgonetki na Human\'s Labs' },
+                    { number: 5, clue: 'Jedna z trzech lokalizacji mapy Victora Vectora' },
+                    { number: 8, clue: 'Nazwisko twórcy' }
                 ]
-            },
-            answers: {
-                1: { word: 'LEW', direction: 'H', row: 0, col: 0 },
-                4: { word: 'KOT', direction: 'H', row: 0, col: 4 },
-                6: { word: 'WIEWIÓRKA', direction: 'H', row: 2, col: 0 },
-                10: { word: 'ORZEŁ', direction: 'H', row: 4, col: 4 },
-                15: { word: 'SŁOŃ', direction: 'H', row: 6, col: 4 }
             }
         };
 
         let userAnswers = {};
+
+        function openCreatorModal() {
+            const modal = document.getElementById('creatorModal');
+            modal.classList.add('show');
+            
+            setTimeout(() => {
+                modal.classList.remove('show');
+            }, 5000);
+        }
 
         // Inicjalizacja krzyżówki
         function initCrossword() {
@@ -543,7 +625,7 @@
 
                         input.addEventListener('input', (e) => {
                             const value = e.target.value.toUpperCase();
-                            if (value && !/[A-Z]/.test(value)) {
+                            if (value && !/[A-Z0-9]/.test(value)) {
                                 e.target.value = '';
                             } else {
                                 e.target.value = value;
@@ -704,16 +786,16 @@
             const scoreDiv = document.getElementById('score');
 
             if (correctCount === totalCount) {
-                resultDiv.textContent = '🎉 Gratulacje! Rozwiązałeś krzyżówkę!';
+                resultDiv.textContent = '🔓 DOSTĘP PRZYZNANY! Zostałeś zaakceptowany w systemie!';
                 resultDiv.classList.add('success');
                 resultDiv.classList.remove('error');
             } else {
-                resultDiv.textContent = `⚠️ Spróbuj jeszcze raz! ${correctCount}/${totalCount} poprawnych.`;
+                resultDiv.textContent = `🔒 DOSTĘP ODMÓWIONY! ${correctCount}/${totalCount} poprawnych. Spróbuj ponownie.`;
                 resultDiv.classList.add('error');
                 resultDiv.classList.remove('success');
             }
 
-            scoreDiv.textContent = `Wynik: ${correctCount}/${totalCount}`;
+            scoreDiv.textContent = `Status: ${correctCount}/${totalCount}`;
         }
 
         function resetCrossword() {
