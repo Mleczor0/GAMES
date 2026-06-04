@@ -178,7 +178,7 @@
             border: 1px solid rgba(66, 135, 245, 0.2);
             border-radius: 20px;
             padding: 60px;
-            max-width: 1200px;
+            max-width: 1000px;
             width: 100%;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
         }
@@ -223,15 +223,11 @@
             margin: 0 auto;
         }
 
-        .content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 50px;
+        .crossword-section {
             margin-bottom: 40px;
         }
 
-        .crossword-section h2,
-        .clues-section h2 {
+        .crossword-section h2 {
             color: #4287f5;
             margin-bottom: 25px;
             font-size: 1.4em;
@@ -240,136 +236,86 @@
         }
 
         .crossword-grid {
-            display: inline-block;
-            border: 3px solid #4287f5;
-            background: rgba(10, 14, 39, 0.9);
-            box-shadow: 0 0 20px rgba(66, 135, 245, 0.3);
-            border-radius: 8px;
-            overflow: hidden;
-        }
-
-        .row {
             display: flex;
+            flex-direction: column;
+            gap: 20px;
+            background: rgba(10, 14, 39, 0.9);
+            border: 2px solid rgba(66, 135, 245, 0.3);
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 0 20px rgba(66, 135, 245, 0.2);
         }
 
-        .cell {
-            width: 45px;
-            height: 45px;
-            border: 1px solid rgba(66, 135, 245, 0.3);
+        .clue-row {
             display: flex;
             align-items: center;
-            justify-content: center;
-            background: rgba(26, 31, 58, 0.8);
-            position: relative;
-        }
-
-        .cell.black {
-            background: #000;
-            border-color: #000;
-        }
-
-        .cell input {
-            width: 100%;
-            height: 100%;
-            border: none;
-            text-align: center;
-            font-size: 16px;
-            font-weight: bold;
-            text-transform: uppercase;
-            background: rgba(26, 31, 58, 0.8);
-            cursor: pointer;
-            padding: 0;
-            color: #fff;
-        }
-
-        .cell input:focus {
-            background: rgba(66, 135, 245, 0.3);
-            outline: none;
-            box-shadow: inset 0 0 10px rgba(66, 135, 245, 0.5);
-        }
-
-        .cell input.correct {
-            color: #4ade80;
-            background: rgba(74, 222, 128, 0.1);
-            box-shadow: inset 0 0 10px rgba(74, 222, 128, 0.3);
-        }
-
-        .cell input.incorrect {
-            color: #ff6b6b;
-            background: rgba(255, 107, 107, 0.1);
-            box-shadow: inset 0 0 10px rgba(255, 107, 107, 0.3);
-        }
-
-        .cell-number {
-            position: absolute;
-            top: 3px;
-            left: 3px;
-            font-size: 11px;
-            font-weight: bold;
-            color: #4287f5;
-            line-height: 1;
-        }
-
-        .clues-section {
-            max-height: 600px;
-            overflow-y: auto;
-            padding-right: 15px;
-        }
-
-        .clues-section::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        .clues-section::-webkit-scrollbar-track {
-            background: rgba(66, 135, 245, 0.1);
-            border-radius: 10px;
-        }
-
-        .clues-section::-webkit-scrollbar-thumb {
-            background: rgba(66, 135, 245, 0.5);
-            border-radius: 10px;
-        }
-
-        .clues-section::-webkit-scrollbar-thumb:hover {
-            background: rgba(66, 135, 245, 0.8);
-        }
-
-        .clues-group {
-            margin-bottom: 30px;
-        }
-
-        .clues-group h3 {
-            color: #4287f5;
-            font-size: 1.1em;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid rgba(66, 135, 245, 0.3);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .clue {
-            padding: 12px 15px;
-            margin-bottom: 10px;
-            background: rgba(66, 135, 245, 0.08);
-            border-left: 3px solid #4287f5;
-            border-radius: 5px;
-            transition: all 0.3s ease;
-        }
-
-        .clue:hover {
-            background: rgba(66, 135, 245, 0.15);
-            padding-left: 20px;
+            gap: 20px;
         }
 
         .clue-number {
             font-weight: bold;
             color: #4287f5;
-            margin-right: 10px;
+            font-size: 1.1em;
+            min-width: 30px;
+            background: rgba(66, 135, 245, 0.15);
+            padding: 8px 12px;
+            border-radius: 5px;
+            text-align: center;
         }
 
         .clue-text {
             color: #c0c0c0;
+            font-size: 0.95em;
+            min-width: 200px;
+            flex: 1;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .cell {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .cell input {
+            width: 100%;
+            height: 100%;
+            border: 2px solid rgba(66, 135, 245, 0.4);
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+            text-transform: uppercase;
+            background: rgba(26, 31, 58, 0.9);
+            color: #fff;
+            border-radius: 5px;
+            cursor: text;
+            transition: all 0.2s ease;
+        }
+
+        .cell input:focus {
+            background: rgba(66, 135, 245, 0.2);
+            border-color: #4287f5;
+            outline: none;
+            box-shadow: 0 0 10px rgba(66, 135, 245, 0.5);
+        }
+
+        .cell input.correct {
+            color: #4ade80;
+            background: rgba(74, 222, 128, 0.1);
+            border-color: #4ade80;
+        }
+
+        .cell input.incorrect {
+            color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.1);
+            border-color: #ff6b6b;
         }
 
         .button-container {
@@ -463,41 +409,27 @@
                 padding: 15px 20px;
             }
 
-            .logo {
-                font-size: 1.1em;
-            }
-
-            .nav-links {
-                gap: 15px;
-                font-size: 0.85em;
-            }
-
             .content-wrapper {
                 padding: 30px;
-            }
-
-            .content {
-                grid-template-columns: 1fr;
-                gap: 30px;
             }
 
             h1 {
                 font-size: 2em;
             }
 
+            .clue-row {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
             .cell {
                 width: 35px;
                 height: 35px;
-                font-size: 14px;
             }
 
             button {
                 padding: 10px 20px;
                 font-size: 0.9em;
-            }
-
-            .clues-section {
-                max-height: 400px;
             }
         }
     </style>
@@ -525,26 +457,12 @@
                 <div class="badge">🔓 HAKOWANIE ROZPOCZĘTO 🔐</div>
                 <h1>Wprowadź Dane</h1>
                 <p class="subtitle">Dostęp do systemu wymaga znajomości tajnych informacji</p>
-                <p class="description">W ciszy nocy, gdy większość śpi, hackerzy przywołują fragmenty przeszłości. Każda litera to klucz do zamkniętych drzwi. Czy jesteś wystarczająco zdeterminowany, aby odkryć prawdę ukrytą w kodzie?</p>
+                <p class="description">Jeśli znasz historię, poznasz jej sekret.</p>
             </div>
 
-            <div class="content">
-                <div class="crossword-section">
-                    <h2>⬛ Krzyżówka</h2>
-                    <div class="crossword-grid" id="crosswordGrid"></div>
-                </div>
-
-                <div class="clues-section">
-                    <h2>📋 Hasła</h2>
-                    <div class="clues-group">
-                        <h3>⬇️ Pionowo</h3>
-                        <div id="verticalClues"></div>
-                    </div>
-                    <div class="clues-group">
-                        <h3>➡️ Poziomo</h3>
-                        <div id="horizontalClues"></div>
-                    </div>
-                </div>
+            <div class="crossword-section">
+                <h2>⬛ Krzyżówka</h2>
+                <div class="crossword-grid" id="crosswordGrid"></div>
             </div>
 
             <div class="button-container">
@@ -559,38 +477,19 @@
     </div>
 
     <script>
-        // Definicja krzyżówki - połączone hasła
-        const crosswordData = {
-            grid: [
-                ['L', 'U', 'I', 'Z', 0, 'R', 'O', 'G', 'E', 'R', 'S'],
-                [0, 0, 'B', 0, 0, 0, 0, 0, 0, 0, 0],
-                ['B', 'A', 'L', 'L', 'E', 'R', 0, 'K', 'U', 'R', 'O'],
-                ['4', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                ['K', 'R', 'U', 'S', 'Z', 'Y', 'N', 'K', 'A', 0, 0],
-                ['Y', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                ['A', 'R', 'O', 'I', 0, 'R', 'Z', 'E', 'Z', 'N', 'I', 'A'],
-                ['0', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                ['Z', 'A', 'S', 'I', 'E', 'G', 'U', 0, 0, 0, 0, 0],
-                ['F', 'E', 'A', 'S', 'T', 'E', 'R', 0, 0, 0, 0, 0]
-            ],
-            clues: {
-                horizontal: [
-                    { number: 1, clue: 'Imię pierwszej ofiary Yami w Los Santos' },
-                    { number: 3, clue: 'Pojazd który porwał partnerkę Leona' },
-                    { number: 6, clue: 'Imię psa Pana B' },
-                    { number: 7, clue: 'Handlował tym inspektor' },
-                    { number: 9, clue: 'Czego nie miał Gregory kiedy Yami chciała rozpocząć zabawę?' },
-                    { number: 10, clue: 'Nazwisko wokalisty którego utwór można usłyszeć w grze 6 ★' }
-                ],
-                vertical: [
-                    { number: 1, clue: 'Imię pierwszej ofiary Yami w Los Santos' },
-                    { number: 2, clue: 'Nazwisko kobiety która pracowała na stacji benzynowej' },
-                    { number: 4, clue: 'Ilość japońców którzy pilnowali furgonetki na Human\'s Labs' },
-                    { number: 5, clue: 'Jedna z trzech lokalizacji mapy Victora Vectora' },
-                    { number: 8, clue: 'Nazwisko twórcy' }
-                ]
-            }
-        };
+        // Definicja krzyżówki
+        const crosswordData = [
+            { number: 1, clue: 'Imię pierwszej ofiary Yami w Los Santos', answer: 'LUIZ', length: 4 },
+            { number: 2, clue: 'Nazwisko kobiety która pracowała na stacji benzynowej', answer: 'ROGERS', length: 6 },
+            { number: 3, clue: 'Pojazd który porwał partnerkę Leona', answer: 'BALLER', length: 6 },
+            { number: 4, clue: 'Ilość japońców którzy pilnowali furgonetki na Human\'s Labs', answer: '4', length: 1 },
+            { number: 5, clue: 'Imię psa Pana B', answer: 'KRUSZYNKA', length: 9 },
+            { number: 6, clue: 'Handlował tym inspektor', answer: 'YAROI', length: 5 },
+            { number: 7, clue: 'Jedna z trzech lokalizacji mapy Victora Vectora', answer: 'RZEZNIA', length: 7 },
+            { number: 8, clue: 'Czego nie miał Gregory kiedy Yami chciała rozpocząć zabawę?', answer: 'ZASIEGU', length: 7 },
+            { number: 9, clue: 'Nazwisko twórcy', answer: 'KURO', length: 4 },
+            { number: 10, clue: 'Nazwisko wokalisty którego utwór można usłyszeć w grze 6 ★', answer: 'FEASTER', length: 7 }
+        ];
 
         let userAnswers = {};
 
@@ -606,181 +505,113 @@
         // Inicjalizacja krzyżówki
         function initCrossword() {
             const gridContainer = document.getElementById('crosswordGrid');
-            const grid = crosswordData.grid;
+            gridContainer.innerHTML = '';
 
-            grid.forEach((row, rowIdx) => {
+            crosswordData.forEach((item, index) => {
                 const rowDiv = document.createElement('div');
-                rowDiv.className = 'row';
+                rowDiv.className = 'clue-row';
 
-                row.forEach((cell, colIdx) => {
+                const numberSpan = document.createElement('div');
+                numberSpan.className = 'clue-number';
+                numberSpan.textContent = item.number;
+
+                const clueSpan = document.createElement('div');
+                clueSpan.className = 'clue-text';
+                clueSpan.textContent = item.clue;
+
+                const inputRowDiv = document.createElement('div');
+                inputRowDiv.className = 'input-row';
+                inputRowDiv.id = `row-${index}`;
+
+                // Tworzenie pól input dla każdej litery
+                for (let i = 0; i < item.length; i++) {
                     const cellDiv = document.createElement('div');
-                    cellDiv.className = 'cell' + (cell === 0 ? ' black' : '');
+                    cellDiv.className = 'cell';
 
-                    if (cell !== 0) {
-                        const input = document.createElement('input');
-                        input.type = 'text';
-                        input.maxLength = '1';
-                        input.dataset.row = rowIdx;
-                        input.dataset.col = colIdx;
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.maxLength = '1';
+                    input.dataset.index = index;
+                    input.dataset.position = i;
+                    input.dataset.answer = item.answer;
 
-                        input.addEventListener('input', (e) => {
-                            const value = e.target.value.toUpperCase();
-                            if (value && !/[A-Z0-9]/.test(value)) {
-                                e.target.value = '';
-                            } else {
-                                e.target.value = value;
+                    input.addEventListener('input', (e) => {
+                        const value = e.target.value.toUpperCase();
+                        // Validation
+                        if (value && !/[A-Z0-9]/.test(value)) {
+                            e.target.value = '';
+                            return;
+                        }
+                        e.target.value = value;
+
+                        // Auto-jump do następnego pola
+                        if (value) {
+                            const nextPosition = parseInt(i) + 1;
+                            if (nextPosition < item.length) {
+                                const nextInput = document.querySelector(`input[data-index="${index}"][data-position="${nextPosition}"]`);
+                                if (nextInput) {
+                                    nextInput.focus();
+                                }
                             }
-                            userAnswers[`${rowIdx}-${colIdx}`] = value;
-                        });
+                        }
 
-                        input.addEventListener('keydown', (e) => {
-                            if (e.key === 'ArrowRight' || e.key === 'Tab') {
-                                e.preventDefault();
-                                focusNext(rowIdx, colIdx, 'H');
-                            } else if (e.key === 'ArrowDown') {
-                                e.preventDefault();
-                                focusNext(rowIdx, colIdx, 'V');
-                            } else if (e.key === 'ArrowLeft' || e.key === 'Shift+Tab') {
-                                e.preventDefault();
-                                focusPrev(rowIdx, colIdx, 'H');
-                            } else if (e.key === 'ArrowUp') {
-                                e.preventDefault();
-                                focusPrev(rowIdx, colIdx, 'V');
+                        // Zapisz odpowiedź
+                        if (!userAnswers[index]) {
+                            userAnswers[index] = [];
+                        }
+                        userAnswers[index][i] = value;
+                    });
+
+                    input.addEventListener('keydown', (e) => {
+                        if (e.key === 'Backspace' && !e.target.value) {
+                            const prevPosition = parseInt(i) - 1;
+                            if (prevPosition >= 0) {
+                                const prevInput = document.querySelector(`input[data-index="${index}"][data-position="${prevPosition}"]`);
+                                if (prevInput) {
+                                    prevInput.focus();
+                                    prevInput.value = '';
+                                    if (userAnswers[index]) {
+                                        userAnswers[index][prevPosition] = '';
+                                    }
+                                }
                             }
-                        });
+                        }
+                    });
 
-                        cellDiv.appendChild(input);
-                    }
+                    cellDiv.appendChild(input);
+                    inputRowDiv.appendChild(cellDiv);
+                }
 
-                    rowDiv.appendChild(cellDiv);
-                });
-
+                rowDiv.appendChild(numberSpan);
+                rowDiv.appendChild(clueSpan);
+                rowDiv.appendChild(inputRowDiv);
                 gridContainer.appendChild(rowDiv);
             });
-
-            generateClueNumbers();
-            displayClues();
-        }
-
-        function generateClueNumbers() {
-            const grid = crosswordData.grid;
-            let clueNumber = 1;
-
-            for (let row = 0; row < grid.length; row++) {
-                for (let col = 0; col < grid[row].length; col++) {
-                    if (grid[row][col] !== 0) {
-                        const isStartOfHorizontal = col === 0 || grid[row][col - 1] === 0;
-                        const isStartOfVertical = row === 0 || grid[row - 1][col] === 0;
-
-                        if (isStartOfHorizontal || isStartOfVertical) {
-                            const cell = document.querySelector(`input[data-row="${row}"][data-col="${col}"]`).parentElement;
-                            const numberSpan = document.createElement('div');
-                            numberSpan.className = 'cell-number';
-                            numberSpan.textContent = clueNumber;
-                            cell.appendChild(numberSpan);
-                            clueNumber++;
-                        }
-                    }
-                }
-            }
-        }
-
-        function displayClues() {
-            const horizontalCluesDiv = document.getElementById('horizontalClues');
-            const verticalCluesDiv = document.getElementById('verticalClues');
-
-            crosswordData.clues.horizontal.forEach(clue => {
-                const clueDiv = document.createElement('div');
-                clueDiv.className = 'clue';
-                clueDiv.innerHTML = `<span class="clue-number">${clue.number}.</span><span class="clue-text">${clue.clue}</span>`;
-                horizontalCluesDiv.appendChild(clueDiv);
-            });
-
-            crosswordData.clues.vertical.forEach(clue => {
-                const clueDiv = document.createElement('div');
-                clueDiv.className = 'clue';
-                clueDiv.innerHTML = `<span class="clue-number">${clue.number}.</span><span class="clue-text">${clue.clue}</span>`;
-                verticalCluesDiv.appendChild(clueDiv);
-            });
-        }
-
-        function focusNext(row, col, direction) {
-            const grid = crosswordData.grid;
-            let nextRow = row, nextCol = col;
-
-            if (direction === 'H') {
-                nextCol++;
-            } else {
-                nextRow++;
-            }
-
-            while (nextRow < grid.length && nextCol < grid[0].length) {
-                if (grid[nextRow][nextCol] !== 0) {
-                    const input = document.querySelector(`input[data-row="${nextRow}"][data-col="${nextCol}"]`);
-                    if (input) {
-                        input.focus();
-                        return;
-                    }
-                }
-                if (direction === 'H') {
-                    nextCol++;
-                } else {
-                    nextRow++;
-                }
-            }
-        }
-
-        function focusPrev(row, col, direction) {
-            const grid = crosswordData.grid;
-            let prevRow = row, prevCol = col;
-
-            if (direction === 'H') {
-                prevCol--;
-            } else {
-                prevRow--;
-            }
-
-            while (prevRow >= 0 && prevCol >= 0) {
-                if (prevRow < grid.length && prevCol < grid[prevRow].length && grid[prevRow][prevCol] !== 0) {
-                    const input = document.querySelector(`input[data-row="${prevRow}"][data-col="${prevCol}"]`);
-                    if (input) {
-                        input.focus();
-                        return;
-                    }
-                }
-                if (direction === 'H') {
-                    prevCol--;
-                } else {
-                    prevRow--;
-                }
-            }
         }
 
         function checkAnswers() {
-            const grid = crosswordData.grid;
             let correctCount = 0;
-            let totalCount = 0;
+            let totalCount = crosswordData.length;
 
-            for (let row = 0; row < grid.length; row++) {
-                for (let col = 0; col < grid[row].length; col++) {
-                    if (grid[row][col] !== 0) {
-                        const input = document.querySelector(`input[data-row="${row}"][data-col="${col}"]`);
-                        const userAnswer = input.value.toUpperCase();
-                        const correctAnswer = grid[row][col];
+            crosswordData.forEach((item, index) => {
+                const userAnswer = (userAnswers[index] || []).join('').toUpperCase();
+                const correctAnswer = item.answer;
+                const inputRow = document.getElementById(`row-${index}`);
+                const inputs = inputRow.querySelectorAll('input');
 
-                        totalCount++;
-
-                        if (userAnswer === correctAnswer) {
-                            input.classList.add('correct');
-                            input.classList.remove('incorrect');
-                            correctCount++;
-                        } else {
-                            input.classList.add('incorrect');
-                            input.classList.remove('correct');
-                        }
-                    }
+                if (userAnswer === correctAnswer) {
+                    inputs.forEach(inp => {
+                        inp.classList.add('correct');
+                        inp.classList.remove('incorrect');
+                    });
+                    correctCount++;
+                } else {
+                    inputs.forEach(inp => {
+                        inp.classList.add('incorrect');
+                        inp.classList.remove('correct');
+                    });
                 }
-            }
+            });
 
             const resultDiv = document.getElementById('resultMessage');
             const scoreDiv = document.getElementById('score');
@@ -806,25 +637,39 @@
             });
             userAnswers = {};
             document.getElementById('resultMessage').classList.remove('success', 'error');
+            document.getElementById('resultMessage').textContent = '';
             document.getElementById('score').textContent = '';
         }
 
         function showHint() {
-            const inputs = document.querySelectorAll('.cell input');
-            const emptyInputs = Array.from(inputs).filter(input => input.value === '');
+            const emptyAnswers = [];
+            
+            crosswordData.forEach((item, index) => {
+                const userAnswer = (userAnswers[index] || []).join('').toUpperCase();
+                if (userAnswer !== item.answer) {
+                    emptyAnswers.push(index);
+                }
+            });
 
-            if (emptyInputs.length === 0) {
-                alert('Wszystkie pola są wypełnione!');
+            if (emptyAnswers.length === 0) {
+                alert('Wszystkie hasła są poprawne!');
                 return;
             }
 
-            const randomInput = emptyInputs[Math.floor(Math.random() * emptyInputs.length)];
-            const row = parseInt(randomInput.dataset.row);
-            const col = parseInt(randomInput.dataset.col);
-            const correctAnswer = crosswordData.grid[row][col];
+            const randomIndex = emptyAnswers[Math.floor(Math.random() * emptyAnswers.length)];
+            const item = crosswordData[randomIndex];
+            const inputRow = document.getElementById(`row-${randomIndex}`);
+            const inputs = inputRow.querySelectorAll('input');
 
-            randomInput.value = correctAnswer;
-            userAnswers[`${row}-${col}`] = correctAnswer;
+            // Wypełnij losowe hasło
+            if (!userAnswers[randomIndex]) {
+                userAnswers[randomIndex] = [];
+            }
+
+            item.answer.split('').forEach((letter, pos) => {
+                inputs[pos].value = letter;
+                userAnswers[randomIndex][pos] = letter;
+            });
         }
 
         // Uruchomienie
